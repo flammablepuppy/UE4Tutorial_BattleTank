@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Projectile.h"
-
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "Engine/World.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -11,6 +12,9 @@ AProjectile::AProjectile()
 
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));
 	RootComponent = ProjectileMesh;
+
+	ProMoveComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComp"));
+	ProMoveComp->bAutoActivate = false;
 
 }
 
@@ -26,5 +30,11 @@ void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AProjectile::LaunchProjectile(float LaunchSpeed)
+{
+	ProMoveComp->SetVelocityInLocalSpace(FVector::ForwardVector * LaunchSpeed);
+	ProMoveComp->Activate();
 }
 

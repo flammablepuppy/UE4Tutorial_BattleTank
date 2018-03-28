@@ -45,8 +45,7 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 // Called by Tank.cpp
 void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 {
-	if (!Barrel) { return; }
-	if (!Turret) { return; }
+	if (!Barrel || !Turret) { return; }
 
 	FVector OutLaunchVelocity;
 	FVector StartLocation = Barrel->GetSocketLocation(FName("BarrelTip"));

@@ -22,7 +22,9 @@ private:
 
 	virtual void Tick(float DeltaTime) override;
 
-	ATank * GetControlledTank() const;
+public:
 
-	ATank * GetPlayerTank() const;
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	float MoveAcceptanceRadius = 3000.f;
+
 };

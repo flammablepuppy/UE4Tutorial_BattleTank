@@ -7,6 +7,9 @@
 #include "TankAimingComponent.h"
 #include "TankBarrel.h"
 #include "Projectile.h"
+#include "Components/InputComponent.h"
+#include "TankMovementComponent.h"
+#include "Engine/Engine.h"
 
 // Sets default values
 ATank::ATank()
@@ -16,8 +19,14 @@ ATank::ATank()
 
 	// No need to protect pointers added at construction
 	TankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("AimComponent"));
+	TankMoveComp = CreateDefaultSubobject<UTankMovementComponent>(TEXT("TankMoveComp"));
 }
 
+void ATank::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+}
 
 void ATank::SetBarrelReference(UTankBarrel* BarrelToSet)
 {
@@ -35,15 +44,22 @@ void ATank::AimAt(FVector HitLocation)
 	TankAimingComponent->AimAt(HitLocation, LaunchSpeed);
 }
 
-void ATank::Fire()
+void ATank::Fire() 
 {
-	auto Time = GetWorld()->GetTimeSeconds();
-	UE_LOG(LogTemp, Warning, TEXT("%f: Player Fires!"), Time);
+	// Protects a nullptr from crashing editor.
+	if (!ProjectileBlueprint) 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("A projectile must be assigned in the Tank Blueprint"))
+		return;
+	}
 
-	if(!BarrelRef){return;}
-
-	GetWorld()->SpawnActor<AProjectile>(ProjectileBlueprint, BarrelRef->GetSocketLocation(FName("BarrelTip")), BarrelRef->GetSocketRotation(FName("BarrelTip")));
-		
+	bool bCanFire = (GetWorld()->GetTimeSeconds() - LastShotTime) > FireCooldown;
+	if (BarrelRef && bCanFire)
+	{
+		auto Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileBlueprint, BarrelRef->GetSocketLocation(FName("BarrelTip")), BarrelRef->GetSocketRotation(FName("BarrelTip")));
+		Projectile->LaunchProjectile(LaunchSpeed);
+		LastShotTime = GetWorld()->GetTimeSeconds();
+	}
 }
 
 // Called when the game starts or when spawned
@@ -51,12 +67,5 @@ void ATank::BeginPlay()
 {
 	Super::BeginPlay();
 	
-}
-
-// Called to bind functionality to input
-void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 

@@ -20,6 +20,6 @@ public:
 	void RotateTurret(float RelativeRotationSpeed);
 
 private:
-	UPROPERTY(EditAnywhere, Category = Setup)
+	UPROPERTY(EditDefaultsOnly, Category = Setup)
 	float TurretRotationRate = 10;	
 };
