@@ -37,8 +37,10 @@ public:
 protected:
 	UTankAimingComponent * TankAimingComponent = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Gun Setup")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gun Setup")
 	float FireCooldown = 3.f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gun Setup")
 	float LastShotTime = -3.f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Components")
