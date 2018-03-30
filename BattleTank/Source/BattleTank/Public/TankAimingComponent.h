@@ -12,6 +12,14 @@
 class UTankBarrel; 
 class UTankTurret;
 
+UENUM()
+enum class EFiringStatus : uint8
+{
+	Reloading,
+	Aiming,
+	Ready
+};
+
 // Holds properties for barrel
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BATTLETANK_API UTankAimingComponent : public UActorComponent
@@ -25,6 +33,9 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	UPROPERTY(BlueprintReadOnly, category = "State")
+	EFiringStatus FiringState = EFiringStatus::Ready;
 
 public:	
 	// Called every frame

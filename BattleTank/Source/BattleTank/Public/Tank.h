@@ -35,6 +35,7 @@ public:
 	float LaunchSpeed = 4000.f;
 
 protected:
+	UPROPERTY(BlueprintReadOnly, category = "Components")
 	UTankAimingComponent * TankAimingComponent = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gun Setup")
