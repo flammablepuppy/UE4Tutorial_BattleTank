@@ -3,6 +3,8 @@
 #include "TankAimingComponent.h"
 #include "TankBarrel.h"
 #include "TankTurret.h"
+#include "Engine/World.h"
+#include "Projectile.h"
 
 // Sets default values for this component's properties
 UTankAimingComponent::UTankAimingComponent()
@@ -11,17 +13,12 @@ UTankAimingComponent::UTankAimingComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
 }
 
-void UTankAimingComponent::SetBarrelReference(UTankBarrel * BarrelToSet)
+void UTankAimingComponent::InitializeAiming(UTankBarrel * SetBarrel, UTankTurret * SetTurret)
 {
-	Barrel = BarrelToSet;
-}
-
-void UTankAimingComponent::SetTurretReference(UTankTurret * TurretToSet)
-{
-	Turret = TurretToSet;
+	Barrel = SetBarrel;
+	Turret = SetTurret;
 }
 
 // Called when the game starts
@@ -43,7 +40,7 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 }
 
 // Called by Tank.cpp
-void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
+void UTankAimingComponent::AimAt(FVector HitLocation)
 {
 	if (!Barrel || !Turret) { return; }
 
@@ -68,13 +65,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 		MoveBarrelTowards(AimDirection);
 		MoveTurretTowards(TurretAimDirection);
 		auto Time = GetWorld()->GetTimeSeconds();
-		//UE_LOG(LogTemp, Warning, TEXT("%f: Barrel Elevate/Rotate called."), Time);
 	}
-	/* else
-	{
-		auto Time = GetWorld()->GetTimeSeconds();
-		UE_LOG(LogTemp, Warning, TEXT("%f: No aim solve found."), Time);
-	} */
 }
 
 void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
@@ -92,4 +83,22 @@ void UTankAimingComponent::MoveTurretTowards(FVector TurretAimDirection)
 	auto AimAsTurretRotator = TurretAimDirection.Rotation();
 	auto DeltaRotator = AimAsTurretRotator - TurretRotator;
 	Turret->RotateTurret(DeltaRotator.Yaw);
+}
+
+void UTankAimingComponent::Fire()
+{
+	// Protects a nullptr from crashing editor.
+	if (!ProjectileBlueprint)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("A projectile must be assigned in the Tank Blueprint"))
+			return;
+	}
+
+	bool bCanFire = (GetWorld()->GetTimeSeconds() - LastShotTime) > FireCooldown;
+	if (Barrel && bCanFire)
+	{
+		auto TankShell = GetWorld()->SpawnActor<AProjectile>(ProjectileBlueprint, Barrel->GetSocketLocation(FName("BarrelTip")), Barrel->GetSocketRotation(FName("BarrelTip")));
+		TankShell->LaunchProjectile(LaunchSpeed);
+		LastShotTime = GetWorld()->GetTimeSeconds();
+	}
 }

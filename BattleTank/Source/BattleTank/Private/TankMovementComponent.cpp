@@ -3,7 +3,7 @@
 #include "TankMovementComponent.h"
 #include "TankTrack.h"
 
-void UTankMovementComponent::InitializeMoveComp(UTankTrack * LeftTrackToSet, UTankTrack * RightTrackToSet)
+void UTankMovementComponent::InitializeMovement(UTankTrack * LeftTrackToSet, UTankTrack * RightTrackToSet)
 {
 	LeftTrack = LeftTrackToSet;
 	RightTrack = RightTrackToSet;
@@ -13,7 +13,7 @@ void UTankMovementComponent::IntendMoveForward(float Throw)
 {
 	if (!LeftTrack || !RightTrack)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Track references must be set fot the tank movement component vis InitializeMoveComp function in the Tank Blueprint."))
+		UE_LOG(LogTemp, Warning, TEXT("Track references must be set for the tank movement component in InitializeMoveComp function in the Tank Blueprint."))
 		return;
 	}
 	LeftTrack->SetThrottle(Throw);
@@ -24,7 +24,7 @@ void UTankMovementComponent::IntendTurnRight(float Throw)
 {
 	if (!LeftTrack || !RightTrack)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Track references must be set fot the tank movement component vis InitializeMoveComp function in the Tank Blueprint."))
+		UE_LOG(LogTemp, Warning, TEXT("Track references must be set for the tank movement component in InitializeMoveComp function in the Tank Blueprint."))
 		return;
 	}
 	LeftTrack->SetThrottle(Throw * 1.5);
