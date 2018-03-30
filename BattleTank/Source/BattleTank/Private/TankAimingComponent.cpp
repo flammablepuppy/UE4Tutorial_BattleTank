@@ -5,6 +5,7 @@
 #include "TankTurret.h"
 #include "Engine/World.h"
 #include "Projectile.h"
+#include "TimerManager.h"
 
 // Sets default values for this component's properties
 UTankAimingComponent::UTankAimingComponent()
@@ -15,21 +16,14 @@ UTankAimingComponent::UTankAimingComponent()
 
 }
 
-void UTankAimingComponent::InitializeAiming(UTankBarrel * SetBarrel, UTankTurret * SetTurret)
-{
-	Barrel = SetBarrel;
-	Turret = SetTurret;
-}
-
 // Called when the game starts
 void UTankAimingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
 	// ...
-	
-}
 
+}
 
 // Called every frame
 void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -39,32 +33,30 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	// ...
 }
 
+void UTankAimingComponent::InitializeAiming(UTankBarrel * SetBarrel, UTankTurret * SetTurret)
+{
+	Barrel = SetBarrel;
+	Turret = SetTurret;
+}
+
 // Called by Tank.cpp
 void UTankAimingComponent::AimAt(FVector HitLocation)
 {
-	if (!Barrel || !Turret) { return; }
+	if (!Barrel || !Turret)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Barrel and Turret references must be set with InitializeAiming function in the tank blueprint."))
+		return;
+	}
 
 	FVector OutLaunchVelocity;
 	FVector StartLocation = Barrel->GetSocketLocation(FName("BarrelTip"));
-	bool bHaveAimSolution = UGameplayStatics::SuggestProjectileVelocity
-	(
-		this,
-		OutLaunchVelocity,
-		StartLocation,
-		HitLocation,
-		LaunchSpeed,
-		false,
-		0,
-		0,
-		ESuggestProjVelocityTraceOption::DoNotTrace
-	);
+	bool bHaveAimSolution = UGameplayStatics::SuggestProjectileVelocity(this, OutLaunchVelocity, StartLocation,	HitLocation, LaunchSpeed, false, 0,	0, ESuggestProjVelocityTraceOption::DoNotTrace);
 	if(bHaveAimSolution)
 	{
 		auto AimDirection = OutLaunchVelocity.GetSafeNormal();
 		auto TurretAimDirection = OutLaunchVelocity.GetSafeNormal();
 		MoveBarrelTowards(AimDirection);
 		MoveTurretTowards(TurretAimDirection);
-		auto Time = GetWorld()->GetTimeSeconds();
 	}
 }
 

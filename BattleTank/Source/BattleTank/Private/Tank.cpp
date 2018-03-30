@@ -2,14 +2,9 @@
 
 #include "Tank.h"
 #include "GameFramework/Actor.h"
-#include "Engine/World.h"
-#include "Projectile.h"
 #include "TankAimingComponent.h"
-#include "TankBarrel.h"
-#include "Projectile.h"
-#include "Components/InputComponent.h"
 #include "TankMovementComponent.h"
-#include "Engine/Engine.h"
+#include "Components/InputComponent.h"
 
 void ATank::InitializeComponents(UTankAimingComponent * SetAimComp, UTankMovementComponent * SetMoveComp)
 {

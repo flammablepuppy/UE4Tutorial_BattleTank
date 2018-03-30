@@ -51,7 +51,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Gun Setup")
 	TSubclassOf<AProjectile> ProjectileBlueprint;
 
-
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
